@@ -3,46 +3,53 @@
 #include <map>
 #include <memory>
 #include <array>
-#include <list>
+
 #include "local_allocator.h"
 #include "container.h"
 
 
+#define W_SIZE 10
 
+int factorial (int x)
+{
+    if( x == 0 ) return 1;
+    return x * factorial (x - 1);
+}
 
+int main(int, char *[])
+{
 
-
-int main(int, char *[]) {
-    //  auto v = std::vector<int, logging_allocator<10,int>>{};
-    //  //v.reserve(10);
-    //  for (size_t i = 0; i < 8 /* 5 */; ++i) {
-    //      v.push_back(i);
-    //      std::cout << std::endl;
-    //  }
-    // std::cout << std::endl;
-    // for (auto i: v) {
-    //     std::cout << i << std::endl;
-    // }
-
-   auto m = std::map<int, int, std::less<int>, logging_allocator<10,std::pair<const int, int>>>{};
-    for (size_t i = 0; i < 10; ++i) {
-       m[i] = i;
-   }
-    for (auto i = 0 ; i < 10 ; i++)
+    auto map_cast_alloc = std::map<int, int> {};
+    for (auto i = 0; i < W_SIZE; ++i)
     {
-        std::cout << m[i];
+        map_cast_alloc[i] = factorial(i);
+        std::cout << i << " " <<  map_cast_alloc[i] << std::endl;
+    }
+    std::cout << std::endl;
+
+    auto map_user_alloc = std::map<int, int, std::less<int>,logging_allocator<W_SIZE,std::pair<const int, int>>> {};
+    for (size_t i = 0; i < W_SIZE; ++i)
+    {
+        map_user_alloc[i] = factorial(i);
+        std::cout << i << " " <<  map_user_alloc[i] << std::endl;
     }
     std::cout << std::endl;
 
 
-    easy_forward_list<int,logging_allocator<10,int>> var;
-    for (auto i = 0 ; i < 10 ; i++){
-         var.emplace_back(i);
+    auto list_cast_alloc = easy_forward_list<int> {};
+    for (auto i = 0 ; i < W_SIZE ; i++)
+    {
+        list_cast_alloc.emplace_back(i);
+        std::cout<<list_cast_alloc[i] << " ";
     }
+    std::cout << std::endl;
 
-      for (auto i = 0; i<var.size();i++)
-      {
-          std::cout<<var[i];
-      }
+    auto list_user_alloc = easy_forward_list<int,logging_allocator<W_SIZE,int>> {};
+    for (auto i = 0 ; i < W_SIZE; i++)
+    {
+        list_user_alloc.emplace_back(i);
+        std::cout<<list_user_alloc[i] << " ";
+    }
+    std::cout << std::endl;
     return 0;
 }

@@ -15,23 +15,28 @@ class easy_forward_list
 
 public:
 
-    explicit easy_forward_list(Allocator _allocator = Allocator()): allocator(_allocator){nodes_counter =0,node = nullptr;};
+    explicit easy_forward_list(Allocator _allocator = Allocator()): allocator(_allocator)
+    {
+        nodes_counter =0,node = nullptr;
+    };
     easy_forward_list(std::initializer_list<T> list, Allocator _allocator = Allocator());
     ~easy_forward_list();
-
-
     void emplace_back(crval_type data);
-    int size(){return nodes_counter;};
+    int size()
+    {
+        return nodes_counter;
+    };
     T& operator[](const int pos);
-    
+
 private:
     template<typename U>
     class Node
     {
-      public:
+    public:
         U data;
         Node* next;
-        Node (U data = U(),Node* next = nullptr){
+        Node (U data = U(),Node* next = nullptr)
+        {
             this->data = data;
             this->next = next;
         };
@@ -43,7 +48,7 @@ private:
     void allocator_operates(const T& data);
     Node<T> * node;
     int nodes_counter;
-    
+
 
 };
 
@@ -51,28 +56,28 @@ template<typename T, typename Allocator>
 easy_forward_list<T,Allocator>::easy_forward_list(std::initializer_list<T> _list, Allocator _allocator):
     allocator(_allocator),
     list(_list)
-{ 
-        nodes_counter =0;
-        node = nullptr;  
-        //!< Аллоцируем память под загрузочный лист ( знание, что аллокатор ограничен 10тью будет обработано не в этом классе, потому нет смысла вызывать исключение
-        for (auto it:list)
-        {
-            allocator_operates(it);
-        }
+{
+    nodes_counter =0;
+    node = nullptr;
+    for (auto it:list)
+    {
+        allocator_operates(it);
+    }
 };
 
 template<typename T, typename Allocator>
-easy_forward_list<T,Allocator>::~easy_forward_list(){
-    
-    Node<T> *current = this->node;
+easy_forward_list<T,Allocator>::~easy_forward_list()
+{
+    auto current = this->node;
 
     while (nullptr != current)
-     {
-         allocator.destroy(current);
-         r_allocator.deallocate(current,1);
-         current = current->next;
-     }
+    {
+        auto for_dealloc = current;
+        current = current->next;
+        allocator.destroy(for_dealloc);
+        r_allocator.deallocate(for_dealloc,1);
 
+    }
 };
 
 
@@ -80,23 +85,27 @@ easy_forward_list<T,Allocator>::~easy_forward_list(){
 template<typename T, typename Allocator>
 void easy_forward_list<T,Allocator>::allocator_operates(crval_type data)
 {
-     auto allocated =  r_allocator.allocate(1);
-     allocator.construct(allocated,Node<T>(data));
+    auto allocated =  r_allocator.allocate(1);
+    allocator.construct(allocated,Node<T>(data,nullptr));
 
-     if (node == nullptr)
-     {
-        node = allocated;//!< первый
-     }
-     else
-     {
-         auto current = this->node;
-         while ( current->next != nullptr)
-         {
-             current = current->next;
-         }
-         current->next = allocated;
-     }
-     nodes_counter++;
+    if (node == nullptr)
+    {
+        node = allocated;
+        nodes_counter++;
+    }
+    else
+    {
+        auto current = this->node;
+        while ( current->next != nullptr)
+        {
+            current = current->next;
+        }
+        if (current->next == nullptr)
+            current->next = allocated;
+
+        nodes_counter++;
+    }
+
 };
 
 template<typename T, typename Allocator>
@@ -110,7 +119,7 @@ T& easy_forward_list<T,Allocator>::operator[](const int pos)
 {
     auto current = this->node;
     auto counter = 0;
-    
+
     while (current != nullptr)
     {
         if (pos ==counter)
@@ -118,4 +127,5 @@ T& easy_forward_list<T,Allocator>::operator[](const int pos)
         current = current->next;
         counter++;
     }
+    return current->data;
 }
