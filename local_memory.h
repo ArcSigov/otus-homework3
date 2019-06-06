@@ -5,7 +5,7 @@
 #include <array>
 
 
-template<typename T,int size>
+template<typename T,std::size_t size>
 class memory_pool
 {
 
@@ -25,7 +25,7 @@ private:
 };
 
 
-template<typename T,int size>
+template<typename T,std::size_t size>
 memory_pool<T,size>::memory_pool()
 {
     for (unsigned long i = 0 ; i < size ; i++)
@@ -34,7 +34,7 @@ memory_pool<T,size>::memory_pool()
     }
 }
 
-template<typename T,int size>
+template<typename T,std::size_t size>
 memory_pool<T,size>::~memory_pool()
 {
     if(pool[0])
@@ -42,7 +42,7 @@ memory_pool<T,size>::~memory_pool()
 }
 
 
-template<typename T,int size>
+template<typename T,std::size_t size>
 T* memory_pool<T,size>::get()
 {
     auto aaa = reinterpret_cast<T*>(std::malloc(size * sizeof(T)));
@@ -57,7 +57,7 @@ T* memory_pool<T,size>::get()
     return pool[0];
 }
 
-template<typename T,int size>
+template<typename T,std::size_t size>
 T* memory_pool<T,size>::resize(std::size_t n)
 {
     iterator +=n;
@@ -66,13 +66,14 @@ T* memory_pool<T,size>::resize(std::size_t n)
     return pool[iterator-n];
 }
 
-template<typename T,int size>
+template<typename T,std::size_t size>
 void memory_pool<T,size>::free(T* val, std::size_t n)
 {
    auto counter_calls = 0;
    auto valid = 0;
 
-   if (val == pool[0]) {valid = 1;}
+   if (val == pool[0])
+        valid = 1;
 
    if (counter_calls == size && valid)
    {

@@ -22,7 +22,7 @@ public:
     easy_forward_list(std::initializer_list<T> list, Allocator _allocator = Allocator());
     ~easy_forward_list();
     void emplace_back(crval_type data);
-    int size()
+    auto size() const
     {
         return nodes_counter;
     };
@@ -55,11 +55,11 @@ private:
 template<typename T, typename Allocator>
 easy_forward_list<T,Allocator>::easy_forward_list(std::initializer_list<T> _list, Allocator _allocator):
     allocator(_allocator),
-    list(_list)
+    list(_list),
+    nodes_counter(0),
+    node(nullptr)
 {
-    nodes_counter =0;
-    node = nullptr;
-    for (auto it:list)
+    for (const auto& it:list)
     {
         allocator_operates(it);
     }
