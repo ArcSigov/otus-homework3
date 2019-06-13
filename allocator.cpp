@@ -3,7 +3,6 @@
 #include <map>
 #include <memory>
 #include <array>
-#include <cassert>
 
 #include "local_allocator.h"
 #include "container.h"
@@ -11,9 +10,8 @@
 
 static const int v_size = 10;
 
-int factorial (int x)
+unsigned int factorial (unsigned int x)
 {
-    assert (x >= 0);
     if( x == 0 ) return 1;
     return x * factorial (x - 1);
 }

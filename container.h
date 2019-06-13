@@ -15,10 +15,7 @@ class easy_forward_list
 
 public:
 
-    explicit easy_forward_list(Allocator _allocator = Allocator()): allocator(_allocator)
-    {
-        nodes_counter =0,node = nullptr;
-    };
+    explicit easy_forward_list(const Allocator& _allocator = Allocator()): allocator(_allocator),node(nullptr), nodes_counter(0){};
     easy_forward_list(std::initializer_list<T> list, Allocator _allocator = Allocator());
     ~easy_forward_list();
     void emplace_back(crval_type data);
