@@ -50,7 +50,7 @@ private:
 };
 
 template<typename T, typename Allocator>
-easy_forward_list<T,Allocator>::easy_forward_list(std::initializer_list<T> _list, Allocator _allocator):
+easy_forward_list<T,Allocator>::easy_forward_list(std::initializer_list<T> _list,const Allocator& _allocator):
     allocator(_allocator),
     list(_list),
     nodes_counter(0),
